@@ -22,7 +22,7 @@ result = fib()
 for n in result:
     print(n, end=', ')
     if n > 10000:
-        break;
+        break
 
 print()
 print('Done')
