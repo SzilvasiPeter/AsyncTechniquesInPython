@@ -11,19 +11,31 @@ def main():
     data = []
 
     threads = [
-        threading.Thread(target=generate_data, args=(20, data)),
-        threading.Thread(target=generate_data, args=(20, data)),
-        threading.Thread(target=process_data, args=(40, data)),
+        threading.Thread(target=generate_data, args=(20, data), daemon=True),
+        threading.Thread(target=generate_data, args=(20, data), daemon=True),
+        threading.Thread(target=process_data, args=(40, data), daemon=True),
     ]
+    abort_thread = threading.Thread(target=check_cancel, daemon=True)
+    abort_thread.start()
 
-    print("Start threads")
+    print(colorama.Fore.GREEN + "Start threads", flush=True)
     [t.start() for t in threads]
 
-    [t.join() for t in threads]
-    print("Join threads")
+    while any([t.is_alive() for t in threads]):
+        [t.join(.002) for t in threads]
+        if not abort_thread.is_alive():
+            print("Canceling your request", flush=True)
+            break
+
+    print(colorama.Fore.RED + "Join threads")
 
     dt = datetime.datetime.now() - t0
     print(colorama.Fore.WHITE + "App exiting, total time: {:,.2f} sec.".format(dt.total_seconds()), flush=True)
+
+
+def check_cancel():
+    print(colorama.Fore.RED + "Press enter to cancel...", flush=True)
+    input()
 
 
 def generate_data(num: int, data: list):
