@@ -64,15 +64,17 @@ def do_transfer(from_account: Account, to_account: Account, amount: int):
     if from_account.balance < amount:
         return
 
-    print("Taking first lock...")
-    with from_account.lock:
-        print("Taking second lock...")
-        with to_account.lock:
+    lock1, lock2 = (
+        (from_account.lock, to_account.lock)
+        if id(from_account) > id(to_account)
+        else (to_account.lock, from_account.lock)
+    )
+
+    with lock1:
+        with lock2:
             from_account.balance -= amount
             time.sleep(.000)
             to_account.balance += amount
-        print("Release second lock...")
-    print("Release first lock...")
 
 
 def validate_bank(accounts: List[Account], total: int, quiet=False):
