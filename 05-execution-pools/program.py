@@ -1,5 +1,7 @@
 import requests
 import bs4
+from concurrent.futures import Future
+from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
 
 def main():
@@ -11,19 +13,25 @@ def main():
         'https://training.talkpython.fm/',
     ]
 
-    for url in urls:
-        print("Getting title from {}".format(url.replace('https', '')),
-              end='... ',
-              flush=True)
+    work = []
+    with PoolExecutor() as executor:
+        for url in urls:
+            future: Future = executor.submit(get_title, url)
+            work.append(future)
 
-        title = get_title(url)
-
-        print("{}".format(title), flush=True)
+        print("Waiting for downloads...", flush=True)
 
     print("Done", flush=True)
+    for future in work:
+        print("{}".format(future.result()), flush=True)
 
 
 def get_title(url: str) -> str:
+    import multiprocessing
+    process = multiprocessing.current_process()
+    print("Getting title from {} PID {} ProcessName: {}".format(url.replace('https://', ''), process.pid, process.name),
+          flush=True)
+
     resp = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:61.0) '
                                                     'Gecko/20100101 Firefox/61.0'})
     resp.raise_for_status()
