@@ -1,7 +1,8 @@
 import requests
 import bs4
 from concurrent.futures import Future
-from concurrent.futures import ThreadPoolExecutor as PoolExecutor
+# from concurrent.futures import ThreadPoolExecutor as PoolExecutor
+from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 
 
 def main():
