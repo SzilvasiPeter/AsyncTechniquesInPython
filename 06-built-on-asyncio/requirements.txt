@@ -1,0 +1,9 @@
+unsync
+trio==0.8.0
+trio_asyncio==0.9.1
+
+aiohttp
+cchardet
+requests
+bs4
+colorama
