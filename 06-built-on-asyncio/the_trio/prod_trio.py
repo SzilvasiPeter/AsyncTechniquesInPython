@@ -10,11 +10,12 @@ async def main():
 
     data = trio.Queue(capacity=10)
 
-    async with trio.open_nursery() as nursery:
-        # nursery: Nursery = nursery  # for auto-complete
-        nursery.start_soon(generate_data, 20, data, name="Prod 1")
-        nursery.start_soon(generate_data, 20, data, name="Prod 2")
-        nursery.start_soon(process_data, 40, data, name="Consumer")
+    with trio.move_on_after(5):
+        async with trio.open_nursery() as nursery:
+            # nursery: Nursery = nursery  # for auto-complete
+            nursery.start_soon(generate_data, 20, data, name="Prod 1")
+            nursery.start_soon(generate_data, 20, data, name="Prod 2")
+            nursery.start_soon(process_data, 40, data, name="Consumer")
 
     dt = datetime.datetime.now() - t0
     print(colorama.Fore.WHITE + "App exiting, total time: {:,.2f} sec.".format(
