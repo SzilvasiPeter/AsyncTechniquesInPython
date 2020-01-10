@@ -7,8 +7,6 @@ import multiprocessing
 def main():
     math_core.do_math(1)
 
-    t0 = datetime.datetime.now()
-
     # do_math(num=30000000)
     print("Doing math on {} processor".format(multiprocessing.cpu_count()))
 
@@ -22,6 +20,7 @@ def main():
                        )
 
     [t.start() for t in threads]
+    t0 = datetime.datetime.now()
     [t.join() for t in threads]
 
     dt = datetime.datetime.now() - t0
